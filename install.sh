@@ -5,3 +5,6 @@ wget -P cromwell/ https://github.com/broadinstitute/cromwell/releases/download/5
 cd nextflow/
 wget -qO- https://get.nextflow.io | bash
 cd ../
+sed -i "s,CURRENT,$(pwd),g" cromwell/inputs.json
+sed -i "s,CURRENT,$(pwd),g" nextflow/nextflow.config
+sed -i "s,CURRENT,$(pwd),g" snakemake/config.yaml

@@ -1,6 +1,6 @@
 {
 	"pipeline.qualityScore" : "20",
 	"pipeline.sample" : "SRR2589044",
-	"pipeline.target" : "/projects/researchit/bradlma/wfm/cromwell/data"
-	"pipeline.adapterSeq" : "/projects/researchit/bradlma/wfm/SRR_adapters.fa"
+	"pipeline.target" : "CURRENT/cromwell/data"
+	"pipeline.adapterSeq" : "CURRENT/SRR_adapters.fa"
 }
