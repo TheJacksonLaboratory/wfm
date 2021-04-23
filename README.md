@@ -19,5 +19,5 @@ cd wfm
 bash install.sh
 ```
 
-This will create a conda environment named `wfm`, as well as download the Nextflow and Cromwell execution engines into their designated folders. The last step will be 
+This will create a conda environment named `wfm`, as well as download the Nextflow and Cromwell execution engines into their designated folders. Now you're ready to start using these examples! 
 
