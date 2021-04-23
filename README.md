@@ -21,3 +21,17 @@ bash install.sh
 
 This will create a conda environment named `wfm`, as well as download the Nextflow and Cromwell execution engines into their designated folders. Now you're ready to start using these examples! 
 
+## Running the Examples
+
+For reference, here are the commands that are used to run each of these examples. To run an example, you must first `cd` into the respective directory. Also, please ensure that you have activated the `wfm` conda environment by running `conda activate wfm`.
+
+### Nextflow 
+`nextflow pipeline.nf`
+
+### Cromwell
+`java -Dconfig.file=/projects/researchit/bradlma/workflow/cromwell/my.conf -jar cromwell-54.jar run -i inputs.json pipeline.wdl`
+OR
+`bash start` *(Included for convenience)*
+
+### Snakemake
+`snakemake -j1 --profile ./slurm`
