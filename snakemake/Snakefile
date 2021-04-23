@@ -1,0 +1,86 @@
+"""
+Download and align samples.
+"""
+configfile: "config.yaml"
+shell.prefix('set -euo pipefail; ')  # Bash strict mode for shell commands
+
+rule all:
+        input:
+                'results/SRR2589044.sorted.bam',
+		'results/fastqc/SRR2589044_1_fastqc.html',
+		'results/fastqc/SRR2589044_1_fastqc.zip',
+		'results/fastqc/SRR2589044_2_fastqc.html',
+                'results/fastqc/SRR2589044_2_fastqc.zip'
+
+rule get_reference:
+        output:
+                ref_fa='data/ref/ecoli_rel606.fasta'
+        threads: 1
+	shell:
+                """curl -L """
+                        """-o data/ref/ecoli_rel606.fasta.gz """
+                        """ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/017/985/GCA_000017985.1_ASM1798v1/GCA_000017985.1_ASM1798v1_genomic.fna.gz; """
+                """gunzip data/ref/ecoli_rel606.fasta.gz; """
+                """bwa index data/ref/ecoli_rel606.fasta"""
+
+rule downloadSRA:
+        output:
+                fa_1='data/raw/{sample}_1.fastq',
+                fa_2='data/raw/{sample}_2.fastq'
+        threads: 1
+        shell:
+                """fasterq-dump --split-files -O data/raw/ {wildcards.sample}"""
+
+rule runFastQC:
+        input:
+                'data/raw/{sample}_1.fastq',
+                'data/raw/{sample}_2.fastq'
+        output:
+                'results/fastqc/{sample}_1_fastqc.zip',
+		'results/fastqc/{sample}_2_fastqc.zip',
+		'results/fastqc/{sample}_1_fastqc.html',
+		'results/fastqc/{sample}_2_fastqc.html'
+        threads: 2
+	log:
+		"logs/runFastQC/{sample}.log"
+        shell:
+                """fastqc --outdir=results/fastqc/ -t2 {input}"""
+
+rule trimReads:
+        input:
+                'data/raw/{sample}_1.fastq',
+                'data/raw/{sample}_2.fastq'
+        output:
+                trimmed=expand('data/trimmed/{{sample}}.{i}.trimmed.fastq', i=(1,2)),
+                untrimmed=expand('data/untrimmed/{{sample}}.{i}.untrimmed.fastq', i=(1,2))
+        threads: 4
+	log:
+		"logs/trimReads/{sample}.log"
+        params:
+                qualityScore=config["qualityScore"],
+		adapterSeq=config["adapterSeq"]
+        shell:
+                """trimmomatic PE -threads 4 {input} {output.trimmed[0]} {output.untrimmed[0]} {output.trimmed[1]} {output.untrimmed[1]} """
+                        """ILLUMINACLIP:{params.adapterSeq}:2:40:15 MINLEN:25 SLIDINGWINDOW:4:{params.qualityScore}"""
+rule align:
+        input:
+                fq=['data/trimmed/{sample}.1.trimmed.fastq', 'data/trimmed/{sample}.2.trimmed.fastq'],
+                ref_fa='data/ref/ecoli_rel606.fasta'
+        output:
+                'results/{sample}.sam'
+        threads:4
+	log:
+		"logs/align/{sample}.log"
+        shell:
+                """bwa mem -o {output} {input.ref_fa} {input.fq}"""
+
+rule samToBAM:
+	input:
+		sam='results/{sample}.sam'
+	output:
+		bam='results/{sample}.sorted.bam'
+	shell:
+		"""samtools view -S -b {input.sam} | """
+		"""samtools sort -o {output.bam}"""
+
+

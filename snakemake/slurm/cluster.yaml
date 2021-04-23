@@ -1,0 +1,8 @@
+__default__:
+  partition: compute
+  mem: 1G
+align:
+  mem: 2G
+  time: 60
+trimReads:
+  mem: 4G
