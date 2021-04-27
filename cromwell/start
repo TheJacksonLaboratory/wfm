@@ -1,2 +1,2 @@
-java -Dconfig.file=/projects/researchit/bradlma/workflow/cromwell/my.conf -jar cromwell-54.jar run -i inputs.json pipeline.wdl 
+java -Dconfig.file=CURRENT/workflow/my.conf -jar cromwell-54.jar run -i inputs.json pipeline.wdl 
 

@@ -29,7 +29,7 @@ For reference, here are the commands that are used to run each of these examples
 `nextflow pipeline.nf`
 
 ### Cromwell
-`java -Dconfig.file=/projects/researchit/bradlma/workflow/cromwell/my.conf -jar cromwell-54.jar run -i inputs.json pipeline.wdl`
+`java -Dconfig.file=[parent-directory]/wfm/cromwell/my.conf -jar cromwell-54.jar run -i inputs.json pipeline.wdl`
 OR
 `bash start` *(Included for convenience)*
 
